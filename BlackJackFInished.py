@@ -1,22 +1,29 @@
-# black jack in python wth pygame!
 import copy
 import random
 import pygame
 
-pygame.init()
-# game variables
-cards = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
-one_deck = 4 * cards
-decks = 4
-WIDTH = 600
+#Screen
+WIDTH = 900
 HEIGHT = 900
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
-pygame.display.set_caption('Pygame Blackjack!')
-fps = 60
+pygame.display.set_caption('BLACKJACK')
+pygame.init()
+#Resolution
+fps = 120
 timer = pygame.time.Clock()
+#Typografie
 font = pygame.font.Font('freesansbold.ttf', 44)
 smaller_font = pygame.font.Font('freesansbold.ttf', 36)
+
+# game variables
+cards = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
+# Because there are 4 of each card type in a deck, we must create 4x of each card type in the list for each deck
+single_deck = 4 * cards
+#4 decks is Casino standard
+decks = 4
 active = False
+
+
 # win, loss, draw/push
 records = [0, 0, 0]
 player_score = 0
@@ -29,7 +36,7 @@ reveal_dealer = False
 hand_active = False
 outcome = 0
 add_score = False
-results = ['', 'PLAYER BUSTED o_O', 'Player WINS! :)', 'DEALER WINS :(', 'TIE GAME...']
+results = ['', 'YOU LOST', 'YOU WIN', 'DEALER WINS :(', 'TIE GAME...']
 
 
 # deal cards by selecting randomly from deck, and make function for one card at a time
@@ -183,7 +190,7 @@ while run:
                 if buttons[0].collidepoint(event.pos):
                     active = True
                     initial_deal = True
-                    game_deck = copy.deepcopy(decks * one_deck)
+                    game_deck = copy.deepcopy(decks * single_deck)
                     my_hand = []
                     dealer_hand = []
                     outcome = 0
@@ -203,7 +210,7 @@ while run:
                     if buttons[2].collidepoint(event.pos):
                         active = True
                         initial_deal = True
-                        game_deck = copy.deepcopy(decks * one_deck)
+                        game_deck = copy.deepcopy(decks * single_deck)
                         my_hand = []
                         dealer_hand = []
                         outcome = 0
