@@ -1,2 +1,2 @@
 print("penis")
-var = input("helllo: ")
+var = input("helllo: ") tzugtcrfzguht
