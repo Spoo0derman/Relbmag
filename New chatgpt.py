@@ -1,12 +1,11 @@
 import pygame
 import random
+import copy
 
-# Initialize pygame and mixer
 pygame.init()
 pygame.mixer.init()
 pygame.joystick.init()
 
-# Check if a controller is connected
 if pygame.joystick.get_count() > 0:
     controller = pygame.joystick.Joystick(0)
     controller.init()
@@ -17,17 +16,13 @@ else:
 lobby_music = pygame.mixer.Sound("lobby_music.mp3")
 main_music = pygame.mixer.Sound("main_music.mp3")
 
-# Set window title
+lobby_music.play()
+
 pygame.display.set_caption("BLACKJACK - Sam & Sid")
 
-# Play lobby music on loop
-lobby_music.play(-1)
-
-# Set display size
 WIDTH, HEIGHT = 900, 800
 display = pygame.display.set_mode([WIDTH, HEIGHT])
 
-# Colors
 Green = (0, 50, 0)
 White = (255, 255, 255)
 Red = (255, 0, 9)
@@ -35,19 +30,18 @@ Red = (255, 0, 9)
 # Game states
 MENU = 0
 GAME = 1
-state = MENU  # Start at menu
+state = MENU
 
-# Main loop
+# Main loop for the game
 running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-        # Detect controller button press
         if event.type == pygame.JOYBUTTONDOWN and controller:
             if event.button == 0:  # "X" button on PS controller (or adjust for Xbox)
-                state = GAME  # Move to the game screen
+                state = GAME
 
     # Display different screens based on state
     if state == MENU:
@@ -58,10 +52,9 @@ while running:
         text = font.render('BLACKJACK', True, Red)
         display.blit(text, (275, 50))
 
-        # Draw button area
-        pygame.draw.rect(display, (127, 127, 127), (300, 600, 350, 100))  # Button area
+        pygame.draw.rect(display, (White), (350, 150, 250, 350))
+        pygame.draw.rect(display, (127, 127, 127), (300, 600, 350, 100))
 
-        # Play text
         small_font = pygame.font.SysFont('Times New Roman', 40)
         play_text = small_font.render('X to Play', True, White)
 
@@ -72,11 +65,9 @@ while running:
 
     elif state == GAME:
         display.fill((0, 100, 0))  # Change background color for the game screen
-        game_text = font.render('Game Started!', True, White)
+        game_text = font.render('Deal me', True, White)
         display.blit(game_text, (275, 50))
 
-    # Update display
     pygame.display.flip()
-    pygame.time.delay(10)  # Prevents excessive CPU usage
 
 pygame.quit()
