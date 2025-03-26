@@ -1,5 +1,7 @@
 
 import pygame
+
+import Game
 import Menu
 import Betting
 #import Game
@@ -64,23 +66,41 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+            pygame.quit()
+        if state == MENU:
+            Menu.set_menu(display=display, Green=Green, Red=Red, home_Screen=home_Screen, small_font=small_font,
+                          White=White)
 
         if event.type == pygame.JOYBUTTONDOWN and controller:
             if event.button == 0:  # "X" button on PS controller (or adjust for Xbox)
                 state = BETTING
-
+                print("State: Betting")
+        pygame.display.flip()
     # Display different screens based on state
-    if state == MENU:
-        Menu.set_menu(display=display, Green=Green, Red=Red, home_Screen=home_Screen, small_font=small_font, White=White)
 
-    if state == BETTING:
+    while state == BETTING:
         Betting.set_betting(display=display, Green=Green, poker_Chips=poker_Chips, small_font=small_font, White=White, controller=controller, x_button=x_button, O_button=O_button, square_button=square_button, triangle_button=triangle_button, state=state, GAME=GAME)
-        if controller.get_button(0):
-            state = GAME
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+                pygame.quit()
+            if event.type == pygame.JOYBUTTONDOWN and controller:
+                if event.button == 0:  # "X" button on PS controller (or adjust for Xbox)
+                    state = GAME
+                    print("State: Game")
+            if event.type == pygame.JOYBUTTONDOWN and controller:
+                if event.button == 1:
+                    print(" added 50")
+            pygame.display.flip()
+
+    while state == GAME:
+        Game.set_game(display, Green, poker_Chips, small_font, White, controller, x_button, O_button, square_button, triangle_button, state, GAME)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+                pygame.quit()
+            pygame.display.flip()
 
 
-
-
-    pygame.display.flip()
 
 pygame.quit()
