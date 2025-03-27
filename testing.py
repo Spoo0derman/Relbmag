@@ -18,6 +18,11 @@ WIDTH, HEIGHT = 900, 800
 display = pygame.display.set_mode([WIDTH, HEIGHT])
 
 small_font = pygame.font.SysFont('Times New Roman', 55)
+small_font_1 = pygame.font.SysFont('Times New Roman', 50)
+total_bet_amount = 0
+total_displayed = small_font_1.render(str(total_bet_amount), True, (0, 255, 170))
+current_money = 500
+money_displayed_betting_screen = small_font.render(str(current_money), True, (240, 0, 255))
 
 if pygame.joystick.get_count() > 0:
     controller = pygame.joystick.Joystick(0)
@@ -43,6 +48,7 @@ square_button = pygame.image.load("Sprites/Screenshot_2025-03-25_103052-removebg
 square_button = pygame.transform.scale_by(square_button, 0.2)
 triangle_button = pygame.image.load("Sprites/Screenshot_2025-03-25_103122-removebg-preview.png").convert_alpha()
 triangle_button = pygame.transform.scale_by(triangle_button, 0.2)
+
 #change after game state changes to BETTING
 lobby_music.play()
 
@@ -51,14 +57,17 @@ pygame.display.set_caption("BLACKJACK - Sam & Sid")
 Green = (0, 50, 0)
 White = (255, 255, 255)
 Red = (255, 0, 9)
+Blue = (0, 255, 170)
+Purple = (240, 0, 255)
 
 # Game states
 MENU = 0
 BETTING = 1
 GAME = 2
 END = 3
-
 state = MENU
+
+total_bet_amount = 0
 
 # Main loop for the game
 running = True
@@ -79,7 +88,9 @@ while running:
     # Display different screens based on state
 
     while state == BETTING:
-        Betting.set_betting(display=display, Green=Green, poker_Chips=poker_Chips, small_font=small_font, White=White, controller=controller, x_button=x_button, O_button=O_button, square_button=square_button, triangle_button=triangle_button, state=state, GAME=GAME)
+        Betting.set_betting(display=display, Green=Green, poker_Chips=poker_Chips, small_font=small_font, White=White, controller=controller, x_button=x_button, O_button=O_button, square_button=square_button, triangle_button=triangle_button, state=state, GAME=GAME, MENU=MENU, BETTING=BETTING)
+        display.blit(money_displayed_betting_screen, (50, 50))
+        display.blit(total_displayed, (355,250))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -88,9 +99,28 @@ while running:
                 if event.button == 0:  # "X" button on PS controller (or adjust for Xbox)
                     state = GAME
                     print("State: Game")
+                    break
             if event.type == pygame.JOYBUTTONDOWN and controller:
-                if event.button == 1:
-                    print(" added 50")
+                if event.button == 2:
+                    total_bet_amount += 50
+                    total_displayed = small_font_1.render(str(total_bet_amount), True, Blue)
+                    current_money -= 50
+                    money_displayed_betting_screen = small_font.render(str(current_money), True, Purple)
+
+                elif event.button == 3:
+                    total_bet_amount += 100
+                    total_displayed = small_font_1.render(str(total_bet_amount), True, Blue)
+                    current_money -= 100
+                    money_displayed_betting_screen = small_font.render(str(current_money), True, Purple)
+
+                elif event.button == 1:
+                    total_bet_amount += 250
+                    total_displayed = small_font_1.render(str(total_bet_amount), True, Blue)
+                    current_money -= 250
+                    money_displayed_betting_screen = small_font.render(str(current_money), True, Purple)
+
+            display.blit(total_displayed, (355, 250))
+            display.blit(money_displayed_betting_screen, (50, 50))
             pygame.display.flip()
 
     while state == GAME:
@@ -99,8 +129,8 @@ while running:
             if event.type == pygame.QUIT:
                 running = False
                 pygame.quit()
-            pygame.display.flip()
+        pygame.display.flip()
 
 
 
-pygame.quit()
+

@@ -2,7 +2,7 @@ import pygame
 import Game
 pygame.init()
 
-def set_betting(display, Green, poker_Chips, small_font, White, controller, x_button, O_button, square_button, triangle_button, state, GAME):
+def set_betting(display, Green, poker_Chips, small_font, White, controller, x_button, O_button, square_button, triangle_button, state, GAME, MENU, BETTING):
     display.fill(Green)
     game_text = small_font.render('Bet amount', True, White)
     total_text = small_font.render('Total:', True, White)
@@ -12,6 +12,11 @@ def set_betting(display, Green, poker_Chips, small_font, White, controller, x_bu
     display.blit(square_button, (240, 600))
     display.blit(triangle_button, (410, 605))
     display.blit(O_button, (575, 595))
+
+
+
+
+
 
     #if controller.get_button(0):  # A for playstation = X / Colour is Red
         #state = GAME
