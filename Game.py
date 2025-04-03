@@ -3,7 +3,7 @@ import random
 import copy
 pygame.init()
 
-def set_game(display, Green, poker_Chips, small_font, White, controller, x_button, O_button, square_button, triangle_button, state, GAME):
+def set_game(display, Green, poker_Chips, small_font, White, controller, x_button, O_button, square_button, triangle_button, state, GAME, current_hand, current_deck):
     display.fill(Green)
     game_text = small_font.render('Bet amount', True, White)
     total_text = small_font.render('Dealer', True, White)

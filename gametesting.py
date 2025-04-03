@@ -11,6 +11,9 @@ pygame.joystick.init()
 WIDTH, HEIGHT = 900, 800
 display = pygame.display.set_mode([WIDTH, HEIGHT])
 
+fps = 120
+timer = pygame.time.Clock()
+
 small_font = pygame.font.SysFont('Times New Roman', 55)
 small_font_1 = pygame.font.SysFont('Times New Roman', 50)
 total_bet_amount = 0
@@ -25,6 +28,45 @@ single_deck = 4 * cards
 #4 decks is Casino standard
 decks = 4
 active = False
+player_hand = []
+dealer_hand = []
+player_score = 0
+dealer_score = 0
+reveal_dealer = False
+hand_active = False
+outcome = 0
+add_score = False
+results = ['', 'YOU LOST', 'YOU WIN', 'DEALER WINS :(', 'TIE GAME...']
+def deal_cards(current_hand, current_deck):
+    card = random.randint(0, len(current_deck))
+    current_hand.append(current_deck[card - 1])
+    current_deck.pop(card - 1)
+    return current_hand, current_deck
+
+
+# draw scores for player and dealer on screen
+def draw_scores(player, dealer):
+    screen.blit(font.render(f'Score[{player}]', True, 'white'), (350, 400))
+    if reveal_dealer:
+        screen.blit(font.render(f'Score[{dealer}]', True, 'white'), (350, 100))
+
+def draw_cards(player, dealer, reveal):
+    for i in range(len(player)):
+        pygame.draw.rect(screen, 'white', [70 + (70 * i), 460 + (5 * i), 120, 220], 0, 5)
+        screen.blit(font.render(player[i], True, 'black'), (75 + 70 * i, 465 + 5 * i))
+        screen.blit(font.render(player[i], True, 'black'), (75 + 70 * i, 635 + 5 * i))
+        pygame.draw.rect(screen, 'red', [70 + (70 * i), 460 + (5 * i), 120, 220], 5, 5)
+
+        # if player hasn't finished turn, dealer will hide one card
+    for i in range(len(dealer)):
+        pygame.draw.rect(screen, 'white', [70 + (70 * i), 160 + (5 * i), 120, 220], 0, 5)
+        if i != 0 or reveal:
+           screen.blit(font.render(dealer[i], True, 'black'), (75 + 70 * i, 165 + 5 * i))
+           screen.blit(font.render(dealer[i], True, 'black'), (75 + 70 * i, 335 + 5 * i))
+        else:
+            screen.blit(font.render('???', True, 'black'), (75 + 70 * i, 165 + 5 * i))
+            screen.blit(font.render('???', True, 'black'), (75 + 70 * i, 335 + 5 * i))
+        pygame.draw.rect(screen, 'blue', [70 + (70 * i), 160 + (5 * i), 120, 220], 5, 5)
 
 if pygame.joystick.get_count() > 0:
     controller = pygame.joystick.Joystick(0)
@@ -135,7 +177,6 @@ while running:
                 running = False
                 pygame.quit()
 
-
             #we check first the button press and the score and then these if statements
             if current_money >= 5000:
                 state = END
@@ -144,6 +185,7 @@ while running:
             elif current_money >= 50 and current_money <= 5000:
                 state = BETTING
         pygame.display.flip()
+
     while state == END:
         END.set_end(display=display, Green=Green, small_font=small_font, White=White, controller=controller, x_button=x_button, O_button=O_button, state=state, GAME=GAME, MENU=MENU, BETTING=BETTING)
         for event in pygame.event.get():

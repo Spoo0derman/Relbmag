@@ -31,7 +31,7 @@ dealer_score = 0
 initial_deal = False
 my_hand = []
 dealer_hand = []
-outcome = 0
+
 reveal_dealer = False
 hand_active = False
 outcome = 0
