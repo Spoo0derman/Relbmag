@@ -1,4 +1,3 @@
-
 import pygame, random, Game, Menu, Betting, End
 
 from pygame.examples.moveit import GameObject
@@ -10,6 +9,7 @@ pygame.joystick.init()
 #variables
 WIDTH, HEIGHT = 900, 800
 display = pygame.display.set_mode([WIDTH, HEIGHT])
+
 
 fps = 120
 timer = pygame.time.Clock()
@@ -96,6 +96,16 @@ def calculate_score(hand):
 
 # draw game conditions and buttons
 def draw_game(act, record, result):
+    """
+
+    Args:
+        act:
+        record:
+        result:
+
+    Returns:
+
+    """
     button_list = []
     # initially on startup (not active) only option is to deal new hand
     if not act:
@@ -204,10 +214,16 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-            pygame.quit()
+            break
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_ESCAPE]:
+            running = False
         if state == MENU:
             Menu.set_menu(display=display, Green=Green, Red=Red, home_Screen=home_Screen, small_font=small_font,
                           White=White)
+        if event.type == keys[pygame.K_ESCAPE]:
+            running = False
+            pygame.quit()
 
         if event.type == pygame.JOYBUTTONDOWN and controller:
             if event.button == 0:  # "X" button on PS controller (or adjust for Xbox)
@@ -263,12 +279,12 @@ while running:
                 pygame.quit()
 
             #we check first the button press and the score and then these if statements
-            if current_money >= 5000:
-                state = END
-            elif current_money <= 50:
-                state = END
-            elif current_money >= 50 and current_money <= 5000:
-                state = BETTING
+            #if current_money >= 5000:
+            #    state = END
+            #elif current_money <= 50:
+             #   state = END
+            #elif current_money >= 50 and current_money <= 5000:
+            #    state = BETTING
         pygame.display.flip()
 
     while state == END:

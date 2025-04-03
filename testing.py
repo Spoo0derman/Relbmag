@@ -101,8 +101,7 @@ while running:
                 if event.button == 0:  # "X" button on PS controller (or adjust for Xbox)
                     state = GAME
                     break
-            if event.type == pygame.JOYBUTTONDOWN and controller:
-                if event.button == 2:
+                elif event.button == 2:
                     if current_money - 50 >= 0:
                         total_bet_amount += 50
                         total_displayed = small_font_1.render("$" + str(total_bet_amount), True, Blue)
@@ -136,13 +135,14 @@ while running:
                 pygame.quit()
 
 
+
             #we check first the button press and the score and then these if statements
-            if current_money >= 5000:
-                state = END
-            elif current_money <= 50:
-                state = END
-            elif current_money >= 50 and current_money <= 5000:
-                state = BETTING
+            #if current_money >= 5000:
+             #   state = END
+            #elif current_money <= 50:
+             #  state = END
+            #elif current_money >= 50 and current_money <= 5000:
+
         pygame.display.flip()
     while state == END:
         END.set_end(display=display, Green=Green, small_font=small_font, White=White, controller=controller, x_button=x_button, O_button=O_button, state=state, GAME=GAME, MENU=MENU, BETTING=BETTING)
