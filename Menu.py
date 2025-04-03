@@ -2,15 +2,6 @@ import pygame
 pygame.init()
 
 def set_menu(display, Green, Red, home_Screen, small_font, White):
-    """
-
-    :param display:
-    :param Green:
-    :param Red:
-    :param home_Screen:
-    :return:
-    """
-
     display.fill(Green)
 
     # Title text

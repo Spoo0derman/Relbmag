@@ -1,9 +1,8 @@
-
 import pygame
 import Menu
 import Betting
-#import Game
-#import End
+import Game
+import End
 
 from pygame.examples.moveit import GameObject
 
