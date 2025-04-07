@@ -1,4 +1,4 @@
-import pygame, random, Game, Menu, Betting, End
+import pygame, random, Game, Menu, Betting, copy, End
 
 from pygame.examples.moveit import GameObject
 
@@ -28,10 +28,13 @@ single_deck = 4 * cards
 #4 decks is Casino standard
 decks = 4
 active = False
-player_hand = []
-dealer_hand = []
+records = [0, 0, 0]
 player_score = 0
 dealer_score = 0
+initial_deal = False
+my_hand = []
+dealer_hand = []
+player_hand = []
 reveal_dealer = False
 hand_active = False
 outcome = 0
@@ -277,8 +280,68 @@ while running:
             if event.type == pygame.QUIT:
                 running = False
                 pygame.quit()
+        if initial_deal:
+            for i in range(2):
+                my_hand, game_deck = deal_cards(my_hand, game_deck)
+                dealer_hand, game_deck = deal_cards(dealer_hand, game_deck)
+            initial_deal = False
+        if active:
+            player_score = calculate_score(my_hand)
+            draw_cards(my_hand, dealer_hand, reveal_dealer)
+            if reveal_dealer:
+                dealer_score = calculate_score(dealer_hand)
+                if dealer_score < 17:
+                    dealer_hand, game_deck = deal_cards(dealer_hand, game_deck)
+            draw_scores(player_score, dealer_score)
+        buttons = draw_game(active, records, outcome)
 
-            #we check first the button press and the score and then these if statements
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            if event.type == pygame.MOUSEBUTTONUP:
+                if not active:
+                    if buttons[0].collidepoint(event.pos):
+                        active = True
+                        initial_deal = True
+                        game_deck = copy.deepcopy(decks * single_deck)
+                        my_hand = []
+                        dealer_hand = []
+                        outcome = 0
+                        hand_active = True
+                        reveal_dealer = False
+                        outcome = 0
+                        add_score = True
+                else:
+                    # if player can hit, allow them to draw a card
+                    if buttons[0].collidepoint(event.pos) and player_score < 21 and hand_active:
+                        my_hand, game_deck = deal_cards(my_hand, game_deck)
+                    # allow player to end turn (stand)
+                    elif buttons[1].collidepoint(event.pos) and not reveal_dealer:
+                        reveal_dealer = True
+                        hand_active = False
+                    elif len(buttons) == 3:
+                        if buttons[2].collidepoint(event.pos):
+                            active = True
+                            initial_deal = True
+                            game_deck = copy.deepcopy(decks * single_deck)
+                            my_hand = []
+                            dealer_hand = []
+                            outcome = 0
+                            hand_active = True
+                            reveal_dealer = False
+                            add_score = True
+                            dealer_score = 0
+                            player_score = 0
+
+        # if player busts, automatically end turn - treat like a stand
+        if hand_active and player_score >= 21:
+            hand_active = False
+            reveal_dealer = True
+
+        outcome, records, add_score = check_endgame(hand_active, dealer_score, player_score, outcome, records,
+                                                    add_score)
+
+        #we check first the button press and the score and then these if statements
             #if current_money >= 5000:
             #    state = END
             #elif current_money <= 50:
