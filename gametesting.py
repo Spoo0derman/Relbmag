@@ -14,6 +14,49 @@ display = pygame.display.set_mode([WIDTH, HEIGHT])
 fps = 120
 timer = pygame.time.Clock()
 
+if pygame.joystick.get_count() > 0:
+    controller = pygame.joystick.Joystick(0)
+    controller.init()
+else:
+    controller = None
+
+# Load music
+lobby_music = pygame.mixer.Sound("Audio/lobby_music.mp3")
+main_music = pygame.mixer.Sound("Audio/main_music.mp3")
+
+home_Screen = pygame.image.load("Sprites/19-playing-cards-png.png").convert_alpha()
+home_Screen = pygame.transform.scale_by(home_Screen, 0.3)
+poker_Chips = pygame.image.load("Sprites/chips-poker 1-Photoroom.png").convert_alpha()
+poker_Chips = pygame.transform.scale_by(poker_Chips, 0.4)
+
+# all ps button variables
+x_button = pygame.image.load("Sprites/Screenshot_2025-03-25_103206-removebg-preview.png").convert_alpha()
+x_button = pygame.transform.scale_by(x_button, 0.2)
+O_button = pygame.image.load("Sprites/Screenshot_2025-03-25_103112-removebg-preview.png").convert_alpha()
+O_button = pygame.transform.scale_by(O_button, 0.2)
+square_button = pygame.image.load("Sprites/Screenshot_2025-03-25_103052-removebg-preview.png").convert_alpha()
+square_button = pygame.transform.scale_by(square_button, 0.2)
+triangle_button = pygame.image.load("Sprites/Screenshot_2025-03-25_103122-removebg-preview.png").convert_alpha()
+triangle_button = pygame.transform.scale_by(triangle_button, 0.2)
+
+#change after game state changes to BETTING
+lobby_music.play()
+
+pygame.display.set_caption("BLACKJACK - Sam & Sid")
+
+Green = (0, 50, 0)
+White = (255, 255, 255)
+Red = (255, 0, 9)
+Blue = (0, 255, 170)
+Purple = (240, 0, 255)
+
+# Game states
+MENU = 0
+BETTING = 1
+GAME = 2
+END = 3
+state = MENU
+
 small_font = pygame.font.SysFont('Times New Roman', 55)
 small_font_1 = pygame.font.SysFont('Times New Roman', 50)
 total_bet_amount = 0
@@ -39,7 +82,7 @@ reveal_dealer = False
 hand_active = False
 outcome = 0
 add_score = False
-results = ['', 'YOU LOST', 'YOU WIN', 'DEALER WINS :(', 'TIE GAME...']
+results = ['', 'YOU LOST', 'YOU WIN', 'DEALER WINS', 'TIE GAME']
 
 #Game definitions
 def deal_cards(current_hand, current_deck):
@@ -99,35 +142,18 @@ def calculate_score(hand):
 
 # draw game conditions and buttons
 def draw_game(act, record, result):
-    """
-
-    Args:
-        act:
-        record:
-        result:
-
-    Returns:
-
-    """
     button_list = []
     # initially on startup (not active) only option is to deal new hand
     if not act:
-        deal = pygame.draw.rect(display, 'white', [150, 20, 300, 100], 0, 5)
-        pygame.draw.rect(display, 'green', [150, 20, 300, 100], 3, 5)
-        deal_text = small_font_1.render('DEAL HAND', True, 'black')
-        display.blit(deal_text, (165, 50))
-        button_list.append(deal)
-    # once game started, shot hit and stand buttons and win/loss records
-    else:
         hit = pygame.draw.rect(display, 'white', [0, 700, 300, 100], 0, 5)
-        pygame.draw.rect(display, 'green', [0, 700, 300, 100], 3, 5)
-        hit_text = small_font_1.render('HIT ME', True, 'black')
-        display.blit(hit_text, (55, 735))
+        pygame.draw.rect(display, Green, [0, 700, 300, 100], 3, 5)
+        hit_text = small_font_1.render('◻ to HIT', True, 'black')
+        display.blit(hit_text, (50, 735))
         button_list.append(hit)
         stand = pygame.draw.rect(display, 'white', [300, 700, 300, 100], 0, 5)
         pygame.draw.rect(display, 'green', [300, 700, 300, 100], 3, 5)
-        stand_text = small_font_1.render('STAND', True, 'black')
-        display.blit(stand_text, (355, 735))
+        stand_text = small_font_1.render('◯ to STAND', True, 'black')
+        display.blit(stand_text, (535, 735))
         button_list.append(stand)
         score_text = small_font.render(f'Wins: {record[0]}   Losses: {record[1]}   Draws: {record[2]}', True, 'white')
         display.blit(score_text, (15, 840))
@@ -164,52 +190,7 @@ def check_endgame(hand_act, deal_score, play_score, result, totals, add):
             else:
                 totals[2] += 1
             add = False
-    return result, totals, add
-
-if pygame.joystick.get_count() > 0:
-    controller = pygame.joystick.Joystick(0)
-    controller.init()
-else:
-    controller = None
-
-# Load music
-lobby_music = pygame.mixer.Sound("Audio/lobby_music.mp3")
-main_music = pygame.mixer.Sound("Audio/main_music.mp3")
-
-home_Screen = pygame.image.load("Sprites/19-playing-cards-png.png").convert_alpha()
-home_Screen = pygame.transform.scale_by(home_Screen, 0.3)
-poker_Chips = pygame.image.load("Sprites/chips-poker 1-Photoroom.png").convert_alpha()
-poker_Chips = pygame.transform.scale_by(poker_Chips, 0.4)
-
-# all ps button variables
-x_button = pygame.image.load("Sprites/Screenshot_2025-03-25_103206-removebg-preview.png").convert_alpha()
-x_button = pygame.transform.scale_by(x_button, 0.2)
-O_button = pygame.image.load("Sprites/Screenshot_2025-03-25_103112-removebg-preview.png").convert_alpha()
-O_button = pygame.transform.scale_by(O_button, 0.2)
-square_button = pygame.image.load("Sprites/Screenshot_2025-03-25_103052-removebg-preview.png").convert_alpha()
-square_button = pygame.transform.scale_by(square_button, 0.2)
-triangle_button = pygame.image.load("Sprites/Screenshot_2025-03-25_103122-removebg-preview.png").convert_alpha()
-triangle_button = pygame.transform.scale_by(triangle_button, 0.2)
-
-#change after game state changes to BETTING
-lobby_music.play()
-
-pygame.display.set_caption("BLACKJACK - Sam & Sid")
-
-Green = (0, 50, 0)
-White = (255, 255, 255)
-Red = (255, 0, 9)
-Blue = (0, 255, 170)
-Purple = (240, 0, 255)
-
-# Game states
-MENU = 0
-BETTING = 1
-GAME = 2
-END = 3
-state = MENU
-
-total_bet_amount = 0
+            return result, totals, add
 
 # Main loop for the game
 running = True
@@ -275,7 +256,7 @@ while running:
 
     while state == GAME:
         Game.set_game(display, Green, poker_Chips, small_font, White, controller, x_button, O_button, square_button, triangle_button, state, GAME)
-        display.blit(total_displayed, (355, 200))
+        display.blit(total_displayed, (50, 50))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -298,9 +279,9 @@ while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-            if event.type == pygame.MOUSEBUTTONUP:
+            if event.type == pygame.JOYBUTTONDOWN and controller:
                 if not active:
-                    if buttons[0].collidepoint(event.pos):
+                    if controller.get_button(0):
                         active = True
                         initial_deal = True
                         game_deck = copy.deepcopy(decks * single_deck)
@@ -309,7 +290,6 @@ while running:
                         outcome = 0
                         hand_active = True
                         reveal_dealer = False
-                        outcome = 0
                         add_score = True
                 else:
                     # if player can hit, allow them to draw a card
@@ -338,8 +318,7 @@ while running:
             hand_active = False
             reveal_dealer = True
 
-        outcome, records, add_score = check_endgame(hand_active, dealer_score, player_score, outcome, records,
-                                                    add_score)
+        #outcome, records, add_score = check_endgame(hand_active, dealer_score, player_score, outcome, records, add_score)
 
         #we check first the button press and the score and then these if statements
             #if current_money >= 5000:
