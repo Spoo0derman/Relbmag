@@ -145,14 +145,14 @@ def draw_game(act, record, result):
     button_list = []
     # initially on startup (not active) only option is to deal new hand
     if not act:
-        hit = pygame.draw.rect(display, 'white', [0, 700, 300, 100], 0, 5)
-        pygame.draw.rect(display, Green, [0, 700, 300, 100], 3, 5)
+        hit = pygame.draw.rect(display, 'white', [50, 700, 300, 100], 0, 5)
+        #pygame.draw.rect(display, Green, [100, 700, 300, 100], 3, 5)
         hit_text = small_font_1.render('◻ to HIT', True, 'black')
-        display.blit(hit_text, (50, 735))
+        display.blit(hit_text, (100, 735))
         button_list.append(hit)
-        stand = pygame.draw.rect(display, 'white', [300, 700, 300, 100], 0, 5)
-        pygame.draw.rect(display, 'green', [300, 700, 300, 100], 3, 5)
-        stand_text = small_font_1.render('◯ to STAND', True, 'black')
+        stand = pygame.draw.rect(display, 'white', [525, 700, 300, 100], 0, 5)
+        #pygame.draw.rect(display, 'green', [300, 700, 300, 100], 3, 5)
+        stand_text = small_font_1.render('O to STAND', True, 'black')
         display.blit(stand_text, (535, 735))
         button_list.append(stand)
         score_text = small_font.render(f'Wins: {record[0]}   Losses: {record[1]}   Draws: {record[2]}', True, 'white')
@@ -224,8 +224,13 @@ while running:
             if event.type == pygame.QUIT:
                 running = False
                 pygame.quit()
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_ESCAPE]:
+                running = False
+                pygame.quit()
+                break
             if event.type == pygame.JOYBUTTONDOWN and controller:
-                if event.button == 0:  # "X" button on PS controller (or adjust for Xbox)
+                if event.button == 0 and total_bet_amount > 0:  # "X" button on PS controller (or adjust for Xbox)
                     state = GAME
                     break
             if event.type == pygame.JOYBUTTONDOWN and controller:
@@ -261,6 +266,11 @@ while running:
             if event.type == pygame.QUIT:
                 running = False
                 pygame.quit()
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_ESCAPE]:
+                running = False
+                pygame.quit()
+                break
         if initial_deal:
             for i in range(2):
                 my_hand, game_deck = deal_cards(my_hand, game_deck)
@@ -278,6 +288,9 @@ while running:
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                run = False
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_ESCAPE]:
                 run = False
             if event.type == pygame.JOYBUTTONDOWN and controller:
                 if not active:
@@ -335,9 +348,14 @@ while running:
             if event.type == pygame.QUIT:
                 running = False
                 pygame.quit()
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_ESCAPE]:
+                running = False
+                pygame.quit()
+                break
             if event.type == pygame.JOYBUTTONDOWN and controller:
                 if event.button == 0:  # "X" button on PS controller (or adjust for Xbox)
-                    state = MENU
+                    state = MENU and current_money == 500 and total_bet_amount == 0
                     break
             if event.type == pygame.JOYBUTTONDOWN and controller:
                 if event.button == 2:
