@@ -306,10 +306,10 @@ while running:
                         add_score = True
                 else:
                     # if player can hit, allow them to draw a card
-                    if buttons[0].collidepoint(event.pos) and player_score < 21 and hand_active:
+                    if controller.get_button(0) and player_score < 21 and hand_active:
                         my_hand, game_deck = deal_cards(my_hand, game_deck)
                     # allow player to end turn (stand)
-                    elif buttons[1].collidepoint(event.pos) and not reveal_dealer:
+                    elif controller.get_button(1) and not reveal_dealer:
                         reveal_dealer = True
                         hand_active = False
                     elif len(buttons) == 3:
