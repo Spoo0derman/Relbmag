@@ -82,7 +82,6 @@ reveal_dealer = False
 hand_active = False
 outcome = 0
 add_score = False
-results = ['Tie Game', 'YOU LOST', 'YOU WIN']
 entered_game_state = True
 
 #Game definitions
@@ -153,27 +152,25 @@ def draw_game(act, record, result):
 
     # Always show Hit/Stand when active
     if act:
-        hit = pygame.draw.rect(display, 'white', [50, 700, 300, 100], 0, 5)
+        hit = pygame.draw.rect(display, 'white', [0, 700, 300, 100], 0, 5)
         hit_text = small_font_1.render('Square to HIT', True, 'black')
-        display.blit(hit_text, (100, 735))
+        display.blit(hit_text, (10, 735))
         button_list.append(hit)
 
-        stand = pygame.draw.rect(display, 'white', [525, 700, 300, 100], 0, 5)
+        stand = pygame.draw.rect(display, 'white', [600, 700, 300, 100], 0, 5)
         stand_text = small_font_1.render('O to STAND', True, 'black')
-        display.blit(stand_text, (535, 735))
+        display.blit(stand_text, (625, 735))
         button_list.append(stand)
 
     score_text = small_font.render(f'Wins: {record[0]}   Losses: {record[1]}   Draws: {record[2]}', True, 'white')
     display.blit(score_text, (15, 840))
 
-    if result != 0:
-        display.blit(small_font_1.render("Win", True, 'white'), (15, 25))
-        deal = pygame.draw.rect(display, 'white', [150, 220, 300, 100], 0, 5)
-        pygame.draw.rect(display, 'green', [150, 220, 300, 100], 3, 5)
-        pygame.draw.rect(display, 'black', [153, 223, 294, 94], 3, 5)
-        deal_text = small_font.render('NEW HAND', True, 'black')
-        display.blit(deal_text, (165, 250))
-        button_list.append(deal)
+    if outcome == 1:
+        display.blit(small_font_1.render("You Win", True, 'white'), (15, 25))
+    elif outcome == 3:
+        display.blit(small_font_1.render("You Lose", True, 'white'), (15, 25))
+    elif outcome == 2:
+        display.blit(small_font_1.render("Draw", True, 'white'), (15, 25))
 
     return button_list
 
@@ -201,6 +198,7 @@ def check_endgame(hand_act, deal_score, play_score, result, totals, add):
                 totals[2] += 1
             add = False
             return result, totals, add
+
 def check_winner(player_score, dealer_score):
     if player_score > 21:
         return -1  # Player busts
@@ -213,6 +211,18 @@ def check_winner(player_score, dealer_score):
     else:
         return 0   # Tie
 
+def start_new_game():
+    global game_deck, my_hand, dealer_hand, outcome, hand_active, reveal_dealer, add_score, dealer_score, player_score, initial_deal
+    game_deck = copy.deepcopy(decks * single_deck)
+    my_hand = []
+    dealer_hand = []
+    outcome = 0
+    hand_active = True
+    reveal_dealer = False
+    add_score = True
+    dealer_score = 0
+    player_score = 0
+    initial_deal = True
 
 # Main loop for the game
 running = True
@@ -227,7 +237,7 @@ while running:
         if state == MENU:
             Menu.set_menu(display=display, Green=Green, Red=Red, home_Screen=home_Screen, small_font=small_font,
                           White=White)
-        if event.type == keys[pygame.K_ESCAPE]:
+        if keys[pygame.K_ESCAPE]:
             running = False
             pygame.quit()
 
@@ -242,6 +252,12 @@ while running:
         Betting.set_betting(display=display, Green=Green, poker_Chips=poker_Chips, small_font=small_font, White=White, controller=controller, x_button=x_button, O_button=O_button, square_button=square_button, triangle_button=triangle_button, state=state, GAME=GAME, MENU=MENU, BETTING=BETTING)
         display.blit(money_displayed_betting_screen, (50, 50))
         display.blit(total_displayed, (355,250))
+        my_hand = []
+        dealer_hand = []
+        outcome = 0
+        dealer_score = 0
+        player_score = 0
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -254,6 +270,7 @@ while running:
             if event.type == pygame.JOYBUTTONDOWN and controller:
                 if event.button == 0 and total_bet_amount > 0:  # "X" button on PS controller (or adjust for Xbox)
                     state = GAME
+                    entered_game_state = True
                     break
             if event.type == pygame.JOYBUTTONDOWN and controller:
                 if event.button == 2:
@@ -337,26 +354,26 @@ while running:
                         player_score = 0
                 else:
                     if hand_active:
-                        if event.button == 1 and player_score < 21:  # Square - Hit
+                        if event.button == 2 and player_score < 21:  # Square - Hit
                             my_hand, game_deck = deal_cards(my_hand, game_deck)
-                        elif event.button == 2 and not reveal_dealer:  # Circle - Stand
+                        elif event.button == 1 and not reveal_dealer:  # Circle - Stand
                             reveal_dealer = True
                             hand_active = False
 
             # Mouse interaction (UI button press)
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if len(buttons) == 3 and buttons[2].collidepoint(event.pos):
-                    active = True
-                    initial_deal = True
-                    game_deck = copy.deepcopy(decks * single_deck)
-                    my_hand = []
-                    dealer_hand = []
-                    outcome = 0
-                    hand_active = True
-                    reveal_dealer = False
-                    add_score = True
-                    dealer_score = 0
-                    player_score = 0
+            #if event.type == pygame.MOUSEBUTTONDOWN:
+                #if len(buttons) == 3 and buttons[2].collidepoint(event.pos):
+                    #active = True
+                    #initial_deal = True
+                    #game_deck = copy.deepcopy(decks * single_deck)
+                    #my_hand = []
+                    #dealer_hand = []
+                    #outcome = 0
+                    #hand_active = True
+                    #reveal_dealer = False
+                    #add_score = True
+                    #dealer_score = 0
+                    #player_score = 0
 
         # Handle initial deal
         if initial_deal:
