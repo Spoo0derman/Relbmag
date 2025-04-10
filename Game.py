@@ -9,3 +9,4 @@ def set_game(display, Green, poker_Chips, small_font, White, controller, x_butto
     total_text = small_font.render('Dealer', True, White)
     display.blit(game_text, (315, 50))
     display.blit(total_text, (200, 250))
+
