@@ -342,7 +342,7 @@ while running:
 
             if event.type == pygame.USEREVENT + 1:
                 state = BETTING  # Move back to betting screen
-                pygame.time.set_timer(pygame.USEREVENT + 1, 0)  # Stop the timer
+                pygame.time.set_timer(pygame.USEREVENT + 1, 3000)  # Stop the timer
 
             if event.type == pygame.JOYBUTTONDOWN and controller:
                 if not active:
@@ -404,10 +404,10 @@ while running:
                 elif outcome == 3:
                     total_bet_amount = 0
                     state = BETTING
-                pygame.time.set_timer(pygame.USEREVENT + 1, 2000)
+                #pygame.time.set_timer(pygame.USEREVENT + 1, 2000)
                 add_score = False
                 if add_score:
-                   # pygame.time.set_timer(pygame.USEREVENT + 1, 2000)  # Set a 2-second timer event
+                    pygame.time.set_timer(pygame.USEREVENT + 1, 3000)  # Set a 2-second timer event
                     add_score = False
         # Redraw everything
         display.fill(Green)
