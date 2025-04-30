@@ -252,6 +252,8 @@ while running:
         Betting.set_betting(display=display, Green=Green, poker_Chips=poker_Chips, small_font=small_font, White=White, controller=controller, x_button=x_button, O_button=O_button, square_button=square_button, triangle_button=triangle_button, state=state, GAME=GAME, MENU=MENU, BETTING=BETTING)
         display.blit(money_displayed_betting_screen, (50, 50))
         display.blit(total_displayed, (355,250))
+        total_displayed = small_font_1.render("$" + str(total_bet_amount), True, Blue)
+        money_displayed_betting_screen = small_font.render("$" + str(current_money), True, Purple)
         my_hand = []
         dealer_hand = []
         outcome = 0
@@ -338,20 +340,14 @@ while running:
                 pygame.quit()
                 break
 
+            if event.type == pygame.USEREVENT + 1:
+                state = BETTING  # Move back to betting screen
+                pygame.time.set_timer(pygame.USEREVENT + 1, 0)  # Stop the timer
+
             if event.type == pygame.JOYBUTTONDOWN and controller:
                 if not active:
                     if event.button == 0:  # X - Start new hand
-                        active = True
-                        initial_deal = True
-                        game_deck = copy.deepcopy(decks * single_deck)
-                        my_hand = []
-                        dealer_hand = []
-                        outcome = 0
-                        hand_active = True
-                        reveal_dealer = False
-                        add_score = True
-                        dealer_score = 0
-                        player_score = 0
+                        start_new_game()
                 else:
                     if hand_active:
                         if event.button == 2 and player_score < 21:  # Square - Hit
@@ -359,21 +355,6 @@ while running:
                         elif event.button == 1 and not reveal_dealer:  # Circle - Stand
                             reveal_dealer = True
                             hand_active = False
-
-            # Mouse interaction (UI button press)
-            #if event.type == pygame.MOUSEBUTTONDOWN:
-                #if len(buttons) == 3 and buttons[2].collidepoint(event.pos):
-                    #active = True
-                    #initial_deal = True
-                    #game_deck = copy.deepcopy(decks * single_deck)
-                    #my_hand = []
-                    #dealer_hand = []
-                    #outcome = 0
-                    #hand_active = True
-                    #reveal_dealer = False
-                    #add_score = True
-                    #dealer_score = 0
-                    #player_score = 0
 
         # Handle initial deal
         if initial_deal:
@@ -387,9 +368,10 @@ while running:
         dealer_score = calculate_score(dealer_hand) if reveal_dealer else 0
 
         # Handle automatic dealer draw
-        if reveal_dealer and dealer_score < 17 and not hand_active:
-            dealer_hand, game_deck = deal_cards(dealer_hand, game_deck)
-            dealer_score = calculate_score(dealer_hand)
+        if reveal_dealer and not hand_active:
+            while dealer_score < 17:
+                dealer_hand, game_deck = deal_cards(dealer_hand, game_deck)
+                dealer_score = calculate_score(dealer_hand)
 
         # Auto-stand if bust
         if hand_active and player_score >= 21:
@@ -414,19 +396,19 @@ while running:
                 if outcome == 1:
                     current_money += total_bet_amount * 2  # Win: double the bet
                     total_bet_amount = 0
-                    pygame.time.wait(1000)
                     state = BETTING
                 elif outcome == 2:
                     current_money += total_bet_amount  # Draw: return bet
                     total_bet_amount = 0
-                    pygame.time.wait(1000)
                     state = BETTING
                 elif outcome == 3:
                     total_bet_amount = 0
-                    pygame.time.wait(1000)
                     state = BETTING
-
+                pygame.time.set_timer(pygame.USEREVENT + 1, 2000)
                 add_score = False
+                if add_score:
+                   # pygame.time.set_timer(pygame.USEREVENT + 1, 2000)  # Set a 2-second timer event
+                    add_score = False
         # Redraw everything
         display.fill(Green)
         draw_cards(my_hand, dealer_hand, reveal_dealer)
