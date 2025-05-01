@@ -2,11 +2,12 @@ import pygame
 import Game
 pygame.init()
 
-def set_betting(display, Green, poker_Chips, small_font, White, controller, x_button, O_button, square_button, triangle_button, state, GAME, MENU, BETTING):
+def set_betting(display, Green, poker_Chips, small_font, White, O_button, square_button, triangle_button, x_button):
     display.fill(Green)
     game_text = small_font.render('Bet amount', True, White)
     #explanation_text = small_font.render('Press square to actualize your account and start with 50 as a betting amount', True, White)
     total_text = small_font.render('Total:', True, White)
+    advance_text = small_font.render('to advance', True, White)
     #display.blit(explanation_text, (5, 25))
     display.blit(game_text, (315, 50))
     display.blit(total_text, (200, 250))
@@ -14,6 +15,8 @@ def set_betting(display, Green, poker_Chips, small_font, White, controller, x_bu
     display.blit(square_button, (240, 600))
     display.blit(triangle_button, (410, 605))
     display.blit(O_button, (575, 595))
+    display.blit(x_button, (475, 225))
+    display.blit(advance_text, (590, 250))
 
 
 

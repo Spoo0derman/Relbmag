@@ -1,5 +1,6 @@
 import pygame, random, Game, Menu, Betting, copy, End
 
+
 from pygame.examples.moveit import GameObject
 
 pygame.init()
@@ -40,6 +41,10 @@ square_button = pygame.image.load("Sprites/Screenshot_2025-03-25_103052-removebg
 square_button = pygame.transform.scale_by(square_button, 0.2)
 triangle_button = pygame.image.load("Sprites/Screenshot_2025-03-25_103122-removebg-preview.png").convert_alpha()
 triangle_button = pygame.transform.scale_by(triangle_button, 0.2)
+losing_image = pygame.image.load("WompWomp.png").convert_alpha()
+losing_image = pygame.transform.scale_by(losing_image, 0.3)
+winning_image = pygame.image.load("mikeyross.jpeg").convert()
+winning_image = pygame.transform.scale_by(winning_image, 0.3)
 
 #change after game state changes to BETTING
 lobby_music.play()
@@ -156,12 +161,12 @@ def draw_game(act, record, result):
     # Always show Hit/Stand when active
     if act:
         hit = pygame.draw.rect(display, 'white', [0, 700, 300, 100], 0, 5)
-        hit_text = small_font_1.render('Square to HIT', True, 'black')
+        hit_text = small_font_1.render('⬛ to HIT', True, 'black')
         display.blit(hit_text, (10, 735))
         button_list.append(hit)
 
         stand = pygame.draw.rect(display, 'white', [600, 700, 300, 100], 0, 5)
-        stand_text = small_font_1.render('O to STAND', True, 'black')
+        stand_text = small_font_1.render('◯ to STAND', True, 'black')
         display.blit(stand_text, (625, 735))
         button_list.append(stand)
 
@@ -170,17 +175,29 @@ def draw_game(act, record, result):
 
     if outcome == 1:
         display.blit(small_font_1.render("You Win", True, 'white'), (15, 25))
+        display.blit(triangle_button, [50, 300])
+        display.blit(small_font_1.render("Keep going!", True, 'white'), (15, 225))
+        display.blit(small_font_1.render("To bet again", True, 'white'), (15, 400))
     elif outcome == 3:
         display.blit(small_font_1.render("You Lose", True, 'white'), (15, 25))
+        display.blit(triangle_button, [50, 300])
+        display.blit(small_font_1.render("Can't end on a loss!", True, 'white'), (15, 225))
+        display.blit(small_font_1.render("To bet again", True, 'white'), (15, 400))
+
     elif outcome == 2:
         display.blit(small_font_1.render("Draw", True, 'white'), (15, 25))
+        display.blit(triangle_button, [50, 300])
+        display.blit(small_font_1.render("Imagine drawing", True, 'white'), (15, 225))
+        display.blit(small_font_1.render("To bet again", True, 'white'), (15, 400))
+
+
 
     return button_list
 
 
 
 # check endgame conditions function
-def check_endgame(hand_act, deal_score, play_score, result, totals, add):
+def check_endgame(hand_act, deal_score, play_score, totals, add):
     # check end game scenarios is player has stood, busted or blackjacked
     # result 1- player bust, 2-win, 3-loss, 4-push
     if not hand_act and deal_score >= 17:
@@ -216,7 +233,7 @@ def check_winner(player_score, dealer_score):
 
 def start_new_game():
     global game_deck, my_hand, dealer_hand, outcome, hand_active, reveal_dealer, add_score, dealer_score, player_score, initial_deal
-    game_deck = copy.deepcopy(decks * single_deck)
+    game_deck = copy.deepcopy(decks * single_deck) #global means that these variables can be modified outside of this area when the fuction is called, in other words it allows them to be updated outside the fuction and be used inside modified.
     my_hand = []
     dealer_hand = []
     outcome = 0
@@ -255,7 +272,7 @@ while running:
     # Display different screens based on state
 
     while state == BETTING:
-        Betting.set_betting(display=display, Green=Green, poker_Chips=poker_Chips, small_font=small_font, White=White, controller=controller, x_button=x_button, O_button=O_button, square_button=square_button, triangle_button=triangle_button, state=state, GAME=GAME, MENU=MENU, BETTING=BETTING)
+        Betting.set_betting(display=display, Green=Green, poker_Chips=poker_Chips, small_font=small_font, White=White, O_button=O_button, square_button=square_button, triangle_button=triangle_button, x_button=x_button)
         total_displayed = small_font_1.render("$" + str(total_bet_amount), True, Blue)
         money_displayed_betting_screen = small_font.render("$" + str(current_money), True, Purple)
         display.blit(money_displayed_betting_screen, (50, 50))
@@ -312,7 +329,7 @@ while running:
             pygame.display.flip()
 
     while state == GAME:
-        Game.set_game(display, Green, poker_Chips, small_font, White, controller, x_button, O_button, square_button, triangle_button, state, GAME)
+        Game.set_game(display, Green, small_font, White)
         display.blit(total_displayed, (50, 50))
         if entered_game_state:
             # Initialize game variables
@@ -333,8 +350,7 @@ while running:
 
             # Draw intro screen
             display.fill(Green)
-            Game.set_game(display, Green, poker_Chips, small_font, White, controller,
-                          x_button, O_button, square_button, triangle_button, state, GAME)
+            Game.set_game(display, Green, small_font, White)
             display.blit(total_displayed, (50, 50))
             pygame.display.flip()
 
@@ -352,11 +368,6 @@ while running:
                 pygame.quit()
                 break
 
-            if event.type == pygame.JOYBUTTONDOWN and controller and not button_pressed:
-                if event.button == 3:
-                    state = BETTING  # Move back to betting screen
-                    add_score = True
-                    button_pressed = True
             if event.type == pygame.JOYBUTTONDOWN and controller and not button_pressed:
                 if not active:
                     if event.button == 0:  # X - Start new hand
@@ -415,17 +426,14 @@ while running:
                 if outcome == 1:
                     current_money += total_bet_amount * 2  # Win: double the bet
                     total_bet_amount = 0
-                    #pygame.time.wait(1000)
-                    #state = BETTING
+
                 elif outcome == 2:
                     current_money += total_bet_amount  # Draw: return bet
                     total_bet_amount = 0
-                    #pygame.time.wait(1000)
-                    #state = BETTING
+
                 elif outcome == 3:
                     total_bet_amount = 0
-                    #pygame.time.wait(1000)
-                    #state = BETTING
+
             add_score = False
             if current_money <= 0:
                 state = END
@@ -433,6 +441,13 @@ while running:
             elif current_money >= 1500:
                 state = END
                 game_result = "Winner"
+
+
+        if event.type == pygame.JOYBUTTONDOWN and controller and not button_pressed:
+            if event.button == 3 and (outcome == 1 or outcome == 2 or outcome == 3):
+                state = BETTING  # Move back to betting screen
+                add_score = True
+                button_pressed = True
         # Redraw everything
         display.fill(Green)
         draw_cards(my_hand, dealer_hand, reveal_dealer)
@@ -441,8 +456,7 @@ while running:
         pygame.display.flip()
 
     while state == END:
-        print("end_state")
-        End.set_end(display=display, Green=Green, small_font=small_font, White=White, controller=controller, x_button=x_button, O_button=O_button, state=state, GAME=GAME, MENU=MENU, BETTING=BETTING)
+        End.set_end(display=display, Green=Green, x_button=x_button, O_button=O_button, small_font_1=small_font_1)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -459,17 +473,19 @@ while running:
                     current_money = 500
                     break
             if event.type == pygame.JOYBUTTONDOWN and controller and not button_pressed:
-                if event.button == 2:
+                if event.button == 1:
                     button_pressed = True
                     pygame.quit()
             if event.type == pygame.JOYBUTTONUP and controller:
                 button_pressed = False
         if game_result == "Winner":
-            display.blit(final_font.render("You've hit Relbmag status! $1500 to add to life savings!", True, 'gold'),
-                (WIDTH // 2 - 150, HEIGHT // 2))
+            display.blit(final_font.render("You've hit Relbmag status!", True, 'gold'),(15, 335))
+            display.blit(small_font_1.render("$1500 to add to life savings!", True, 'gold'),(15, 385))
+            display.blit(winning_image, (325, 15))
         elif game_result == "Bankrupt":
-            display.blit(final_font.render("BANKRUPT! Grammy is upset you spent all your college tuition", True, 'red'),
-                (WIDTH // 2 - 150, HEIGHT // 2))
+            display.blit(small_font_1.render("BANKRUPT!", True, 'red'),(15, 245))
+            display.blit(small_font_1.render("Grammy is upset you're friends with Trevor", True, 'red'),(15, 295))
+            display.blit(losing_image, (350, 15))
         pygame.display.flip()
 
 
