@@ -7,13 +7,9 @@ pygame.init()
 pygame.mixer.init()
 pygame.joystick.init()
 
-#variables
+#variables for general screen display
 WIDTH, HEIGHT = 900, 800
 display = pygame.display.set_mode([WIDTH, HEIGHT])
-
-
-fps = 120
-timer = pygame.time.Clock()
 
 if pygame.joystick.get_count() > 0:
     controller = pygame.joystick.Joystick(0)
@@ -24,6 +20,8 @@ else:
 # Load music
 lobby_music = pygame.mixer.Sound("Audio/lobby_music.mp3")
 main_music = pygame.mixer.Sound("Audio/main_music.mp3")
+win_music = pygame.mixer.Sound("Audio/Here comes the money - meme [ ezmp3.co ].mp3")
+loss_music = pygame.mixer.Sound("Audio/Sad Trombone - Sound Effect (HD).mp3")
 
 button_pressed = False
 
@@ -41,9 +39,9 @@ square_button = pygame.image.load("Sprites/Screenshot_2025-03-25_103052-removebg
 square_button = pygame.transform.scale_by(square_button, 0.2)
 triangle_button = pygame.image.load("Sprites/Screenshot_2025-03-25_103122-removebg-preview.png").convert_alpha()
 triangle_button = pygame.transform.scale_by(triangle_button, 0.2)
-losing_image = pygame.image.load("WompWomp.png").convert_alpha()
+losing_image = pygame.image.load("Sprites/WompWomp.png").convert_alpha()
 losing_image = pygame.transform.scale_by(losing_image, 0.3)
-winning_image = pygame.image.load("mikeyross.jpeg").convert()
+winning_image = pygame.image.load("Sprites/mikeyross.jpeg").convert()
 winning_image = pygame.transform.scale_by(winning_image, 0.3)
 
 #change after game state changes to BETTING
@@ -64,9 +62,11 @@ GAME = 2
 END = 3
 state = MENU
 
-small_font = pygame.font.SysFont('Times New Roman', 55)
-small_font_1 = pygame.font.SysFont('Times New Roman', 50)
-final_font = pygame.font.SysFont('Times New Roman', 55)
+small_font = pygame.font.SysFont('Impact', 50)
+small_font_1 = pygame.font.SysFont('Impact', 45)
+small_font_cards = pygame.font.SysFont('Times New Roman', 40)
+final_font = pygame.font.SysFont('Comic Sans MS', 55)
+final_font_Trevor = pygame.font.SysFont('Comic Sans MS', 40)
 total_bet_amount = 0
 total_displayed = small_font_1.render("$" + str(total_bet_amount), True, (0, 255, 170))
 current_money = 500
@@ -102,9 +102,9 @@ def deal_cards(current_hand, current_deck):
 
 # draw scores for player and dealer on screen
 def draw_scores(player, dealer):
-    display.blit(small_font.render(f'Score[{player}]', True, 'white'), (350, 400))
+    display.blit(small_font.render(f'You: {player}', True, 'white'), (350, 400))
     if reveal_dealer:
-        display.blit(small_font.render(f'Score[{dealer}]', True, 'white'), (350, 100))
+        display.blit(small_font.render(f'Dealer: {dealer}', True, 'white'), (350, 100))
 
 def draw_cards(player, dealer, reveal):
     # Draw player cards
@@ -112,8 +112,8 @@ def draw_cards(player, dealer, reveal):
         x = 400 + (70 * i)
         y = 460 + (5 * i)
         pygame.draw.rect(display, 'white', [x, y, 120, 220], 0, 5)
-        display.blit(small_font_1.render(player[i], True, 'black'), (x + 30, y + 5))
-        display.blit(small_font_1.render(player[i], True, 'black'), (x + 30, y + 170))
+        display.blit(small_font_cards.render(player[i], True, 'black'), (x + 30, y + 5))
+        display.blit(small_font_cards.render(player[i], True, 'black'), (x + 30, y + 170))
         pygame.draw.rect(display, 'red', [x, y, 120, 220], 5, 5)
 
     # Draw dealer cards
@@ -123,8 +123,8 @@ def draw_cards(player, dealer, reveal):
         pygame.draw.rect(display, 'white', [x, y, 120, 220], 0, 5)
 
         if i != 0 or reveal:
-            display.blit(small_font_1.render(dealer[i], True, 'black'), (x + 30, y + 5))
-            display.blit(small_font_1.render(dealer[i], True, 'black'), (x + 30, y + 170))
+            display.blit(small_font_cards.render(dealer[i], True, 'black'), (x + 30, y + 5))
+            display.blit(small_font_cards.render(dealer[i], True, 'black'), (x + 30, y + 170))
         else:
             display.blit(small_font_1.render('???', True, 'black'), (x + 20, y + 80))
 
@@ -160,34 +160,57 @@ def draw_game(act, record, result):
 
     # Always show Hit/Stand when active
     if act:
-        hit = pygame.draw.rect(display, 'white', [0, 700, 300, 100], 0, 5)
-        hit_text = small_font_1.render('⬛ to HIT', True, 'black')
-        display.blit(hit_text, (10, 735))
-        button_list.append(hit)
 
-        stand = pygame.draw.rect(display, 'white', [600, 700, 300, 100], 0, 5)
-        stand_text = small_font_1.render('◯ to STAND', True, 'black')
-        display.blit(stand_text, (625, 735))
-        button_list.append(stand)
+        #long_box = pygame.draw.rect(display, 'white', [0, 700, 900, 100], 0, 5)
 
-    score_text = small_font.render(f'Wins: {record[0]}   Losses: {record[1]}   Draws: {record[2]}', True, 'white')
-    display.blit(score_text, (15, 840))
+        if current_money >= total_bet_amount:
+
+            long_box = pygame.draw.rect(display, 'white', [0, 700, 900, 100], 0, 5)
+
+            double_down_text = small_font_1.render('DOUBLE DOWN', True, 'black')
+            display.blit(double_down_text, (340, 730))
+            display.blit(triangle_button, (240, 705))
+
+            hit_text = small_font_1.render('       HIT', True, 'black')
+            display.blit(hit_text, (75, 730))
+            display.blit(square_button, (15, 700))
+
+            stand_text = small_font_1.render('      STAND', True, 'black')
+            display.blit(stand_text, (695, 730))
+            display.blit(O_button, (630, 695))
+
+        else:
+
+            hit = pygame.draw.rect(display, 'white', [185, 700, 600, 100], 0, 5)
+
+            hit_text = small_font_1.render('     HIT', True, 'black')
+            display.blit(hit_text, (250, 730))
+            display.blit(square_button, (190, 700))
+
+            #stand = pygame.draw.rect(display, 'white', [495, 700, 300, 100], 0, 5)
+
+            stand_text = small_font_1.render('      STAND', True, 'black')
+            display.blit(stand_text, (580, 730))
+            display.blit(O_button, (510, 695))
+
+
+
 
     if outcome == 1:
-        display.blit(small_font_1.render("You Win", True, 'white'), (15, 25))
+        display.blit(small_font_1.render("You Win", True, 'gold'), (15, 25))
         display.blit(triangle_button, [50, 300])
         display.blit(small_font_1.render("Keep going!", True, 'white'), (15, 225))
         display.blit(small_font_1.render("To bet again", True, 'white'), (15, 400))
     elif outcome == 3:
-        display.blit(small_font_1.render("You Lose", True, 'white'), (15, 25))
+        display.blit(small_font_1.render("You Lose", True, 'red'), (15, 25))
         display.blit(triangle_button, [50, 300])
         display.blit(small_font_1.render("Can't end on a loss!", True, 'white'), (15, 225))
         display.blit(small_font_1.render("To bet again", True, 'white'), (15, 400))
 
     elif outcome == 2:
-        display.blit(small_font_1.render("Draw", True, 'white'), (15, 25))
+        display.blit(small_font_1.render("Draw", True, 'gray'), (15, 25))
         display.blit(triangle_button, [50, 300])
-        display.blit(small_font_1.render("Imagine drawing", True, 'white'), (15, 225))
+        display.blit(small_font_1.render("Basically a loss", True, 'white'), (15, 225))
         display.blit(small_font_1.render("To bet again", True, 'white'), (15, 400))
 
 
@@ -272,12 +295,14 @@ while running:
     # Display different screens based on state
 
     while state == BETTING:
-        Betting.set_betting(display=display, Green=Green, poker_Chips=poker_Chips, small_font=small_font, White=White, O_button=O_button, square_button=square_button, triangle_button=triangle_button, x_button=x_button)
+        Betting.set_betting(display=display, Green=Green, poker_Chips=poker_Chips, small_font=small_font, White=White, O_button=O_button, square_button=square_button, triangle_button=triangle_button, x_button=x_button, total_bet_amount=total_bet_amount)
         total_displayed = small_font_1.render("$" + str(total_bet_amount), True, Blue)
         money_displayed_betting_screen = small_font.render("$" + str(current_money), True, Purple)
         display.blit(money_displayed_betting_screen, (50, 50))
         display.blit(total_displayed, (355, 250))
         lobby_music.fadeout(4000)
+        win_music.stop()
+        loss_music.stop()
         main_music.play()
         my_hand = []
         dealer_hand = []
@@ -382,6 +407,18 @@ while running:
                             reveal_dealer = True
                             hand_active = False
                             button_pressed = True
+                        elif event.button == 3 and len(my_hand) == 2 and current_money >= total_bet_amount:
+                            # Double the bet
+                            current_money -= total_bet_amount
+                            total_bet_amount *= 2
+
+                            # Deal one card
+                            my_hand, game_deck = deal_cards(my_hand, game_deck)
+
+                            # Auto-stand
+                            hand_active = False
+                            reveal_dealer = True
+                            button_pressed = True
             if event.type == pygame.JOYBUTTONUP and controller:
                 button_pressed = False
         # Handle initial deal
@@ -479,13 +516,17 @@ while running:
             if event.type == pygame.JOYBUTTONUP and controller:
                 button_pressed = False
         if game_result == "Winner":
-            display.blit(final_font.render("You've hit Relbmag status!", True, 'gold'),(15, 335))
-            display.blit(small_font_1.render("$1500 to add to life savings!", True, 'gold'),(15, 385))
-            display.blit(winning_image, (325, 15))
+            display.blit(final_font.render("You've hit Relbmag status!", True, 'gold'),(65, 335))
+            display.blit(final_font.render("$1500 to add to life savings!", True, 'gold'),(50, 395))
+            display.blit(winning_image, (150, 15))
+            main_music.fadeout(1000)
+            win_music.play()
         elif game_result == "Bankrupt":
-            display.blit(small_font_1.render("BANKRUPT!", True, 'red'),(15, 245))
-            display.blit(small_font_1.render("Grammy is upset you're friends with Trevor", True, 'red'),(15, 295))
-            display.blit(losing_image, (350, 15))
+            display.blit(final_font.render("BANKRUPT!", True, 'red'),(285, 280))
+            display.blit(final_font_Trevor.render("Grammy is upset you're friends with Trevor", True, 'red'),(30, 350))
+            display.blit(losing_image, (275, 15))
+            main_music.fadeout(1000)
+            loss_music.play()
         pygame.display.flip()
 
 

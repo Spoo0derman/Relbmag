@@ -5,9 +5,9 @@ def set_menu(display, Green, Red, home_Screen, small_font, White):
     display.fill(Green)
 
     # Title text
-    font = pygame.font.SysFont('Times New Roman', 66)
+    font = pygame.font.SysFont('Goudy Stout', 77)
     text = font.render('BLACKJACK', True, Red)
-    display.blit(text, (275, 50))
+    display.blit(text, (25, 50))
 
     #Home Screen Cards image & Button
     display.blit(home_Screen, (225, 200))
