@@ -11,26 +11,31 @@ pygame.joystick.init()
 WIDTH, HEIGHT = 900, 800
 display = pygame.display.set_mode([WIDTH, HEIGHT])
 
+
+# Checking to see if there is a controller plugged in otherwise it won't work.
+# We have also made it so if it's plugged in before the game starts it won't work
 if pygame.joystick.get_count() > 0:
     controller = pygame.joystick.Joystick(0)
     controller.init()
 else:
     controller = None
 
-# Load music
+# This line of code is very important as it allows us to check if a button has been pushed down.
+button_pressed = False
+
+# All music is loaded here
 lobby_music = pygame.mixer.Sound("Audio/lobby_music.mp3")
 main_music = pygame.mixer.Sound("Audio/main_music.mp3")
 win_music = pygame.mixer.Sound("Audio/Here comes the money - meme [ ezmp3.co ].mp3")
 loss_music = pygame.mixer.Sound("Audio/Sad Trombone - Sound Effect (HD).mp3")
 
-button_pressed = False
+# In these 2 blocks of code we load most of our sprites and images.
 
 home_Screen = pygame.image.load("Sprites/19-playing-cards-png.png").convert_alpha()
 home_Screen = pygame.transform.scale_by(home_Screen, 0.3)
 poker_Chips = pygame.image.load("Sprites/chips-poker 1-Photoroom.png").convert_alpha()
 poker_Chips = pygame.transform.scale_by(poker_Chips, 0.4)
 
-# all ps button variables
 x_button = pygame.image.load("Sprites/Screenshot_2025-03-25_103206-removebg-preview.png").convert_alpha()
 x_button = pygame.transform.scale_by(x_button, 0.2)
 O_button = pygame.image.load("Sprites/Screenshot_2025-03-25_103112-removebg-preview.png").convert_alpha()
@@ -39,13 +44,13 @@ square_button = pygame.image.load("Sprites/Screenshot_2025-03-25_103052-removebg
 square_button = pygame.transform.scale_by(square_button, 0.2)
 triangle_button = pygame.image.load("Sprites/Screenshot_2025-03-25_103122-removebg-preview.png").convert_alpha()
 triangle_button = pygame.transform.scale_by(triangle_button, 0.2)
+
 losing_image = pygame.image.load("Sprites/WompWomp.png").convert_alpha()
 losing_image = pygame.transform.scale_by(losing_image, 0.3)
 winning_image = pygame.image.load("Sprites/mikeyross.jpeg").convert()
 winning_image = pygame.transform.scale_by(winning_image, 0.3)
 
-#change after game state changes to BETTING
-lobby_music.play()
+
 
 pygame.display.set_caption("BLACKJACK - Sam & Sid")
 
@@ -267,7 +272,13 @@ def start_new_game():
     player_score = 0
     initial_deal = True
 
+
+# This simply starts our music
+lobby_music.play()
+
 # Main loop for the game
+
+
 running = True
 while running:
     for event in pygame.event.get():
