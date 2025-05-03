@@ -7,13 +7,13 @@ pygame.init()
 pygame.mixer.init()
 pygame.joystick.init()
 
-#variables for general screen display
+#Variables for general screen display
 WIDTH, HEIGHT = 900, 800
 display = pygame.display.set_mode([WIDTH, HEIGHT])
 
 
 # Checking to see if there is a controller plugged in otherwise it won't work.
-# We have also made it so if it's plugged in before the game starts it won't work
+# We have also made it so if it's plugged in before the game starts it won't work.
 if pygame.joystick.get_count() > 0:
     controller = pygame.joystick.Joystick(0)
     controller.init()
@@ -67,11 +67,14 @@ GAME = 2
 END = 3
 state = MENU
 
+#Fonts
 small_font = pygame.font.SysFont('Impact', 50)
 small_font_1 = pygame.font.SysFont('Impact', 45)
 small_font_cards = pygame.font.SysFont('Times New Roman', 40)
 final_font = pygame.font.SysFont('Comic Sans MS', 55)
 final_font_Trevor = pygame.font.SysFont('Comic Sans MS', 40)
+
+#Variable setting for betting state
 total_bet_amount = 0
 total_displayed = small_font_1.render("$" + str(total_bet_amount), True, (0, 255, 170))
 current_money = 500
@@ -166,11 +169,9 @@ def draw_game(act, record, result):
     # Always show Hit/Stand when active
     if act:
 
-        #long_box = pygame.draw.rect(display, 'white', [0, 700, 900, 100], 0, 5)
-
         if current_money >= total_bet_amount:
 
-            long_box = pygame.draw.rect(display, 'white', [0, 700, 900, 100], 0, 5)
+            pygame.draw.rect(display, 'white', [0, 700, 900, 100], 0, 5)
 
             double_down_text = small_font_1.render('DOUBLE DOWN', True, 'black')
             display.blit(double_down_text, (340, 730))
@@ -186,13 +187,12 @@ def draw_game(act, record, result):
 
         else:
 
-            hit = pygame.draw.rect(display, 'white', [185, 700, 600, 100], 0, 5)
+            pygame.draw.rect(display, 'white', [185, 700, 600, 100], 0, 5)
 
             hit_text = small_font_1.render('     HIT', True, 'black')
             display.blit(hit_text, (250, 730))
             display.blit(square_button, (190, 700))
 
-            #stand = pygame.draw.rect(display, 'white', [495, 700, 300, 100], 0, 5)
 
             stand_text = small_font_1.render('      STAND', True, 'black')
             display.blit(stand_text, (580, 730))
@@ -225,39 +225,9 @@ def draw_game(act, record, result):
 
 
 # check endgame conditions function
-def check_endgame(hand_act, deal_score, play_score, totals, add):
-    # check end game scenarios is player has stood, busted or blackjacked
-    # result 1- player bust, 2-win, 3-loss, 4-push
-    if not hand_act and deal_score >= 17:
-        if play_score > 21:
-            result = 1
-        elif deal_score < play_score <= 21 or deal_score > 21:
-            result = 2
-        elif play_score < deal_score <= 21:
-            result = 3
-        else:
-            result = 4
-        if add:
-            if result == 1 or result == 3:
-                totals[1] += 1
-            elif result == 2:
-                totals[0] += 1
-            else:
-                totals[2] += 1
-            add = False
-            return result, totals, add
 
-def check_winner(player_score, dealer_score):
-    if player_score > 21:
-        return -1  # Player busts
-    elif dealer_score > 21:
-        return 1   # Dealer busts
-    elif player_score > dealer_score:
-        return 1   # Player wins
-    elif player_score < dealer_score:
-        return -1  # Dealer wins
-    else:
-        return 0   # Tie
+
+
 
 def start_new_game():
     global game_deck, my_hand, dealer_hand, outcome, hand_active, reveal_dealer, add_score, dealer_score, player_score, initial_deal
