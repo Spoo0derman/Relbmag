@@ -456,7 +456,7 @@ while running:
             if current_money <= 0:
                 state = END
                 game_result = "Bankrupt"
-            elif current_money >= 1500:
+            elif current_money >= 2500:
                 state = END
                 game_result = "Winner"
 
@@ -498,7 +498,7 @@ while running:
                 button_pressed = False
         if game_result == "Winner":
             display.blit(final_font.render("You've hit Relbmag status!", True, 'gold'),(65, 335))
-            display.blit(final_font.render("$1500 to add to life savings!", True, 'gold'),(50, 395))
+            display.blit(final_font.render("$2500 to add to life savings!", True, 'gold'),(50, 395))
             display.blit(winning_image, (150, 15))
             main_music.fadeout(1000)
             win_music.play()
