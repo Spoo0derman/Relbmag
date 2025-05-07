@@ -7,29 +7,29 @@ pygame.init()
 pygame.mixer.init()
 pygame.joystick.init()
 
-#Variables for general screen display
+#variablen für die allgemeine Bildschrimdarstellung
 WIDTH, HEIGHT = 900, 800
 display = pygame.display.set_mode([WIDTH, HEIGHT])
 
 
-# Checking to see if there is a controller plugged in otherwise it won't work.
-# We have also made it so if it's plugged in before the game starts it won't work.
+# Prüfen, ob ein Controller angeschlossen ist, sonst funktioniert es nicht.
+# Wir haben es auch so gemacht, dass es nicht funktioniert, wenn er eingesteckt ist, bevor das Spiel startet.
 if pygame.joystick.get_count() > 0:
     controller = pygame.joystick.Joystick(0)
     controller.init()
 else:
     controller = None
 
-# This line of code is very important as it allows us to check if a button has been pushed down.
+# Diese Codezeile ist sehr wichtig, da sie uns erlaubt zu prüfen, ob eine Taste gedrückt wurde.
 button_pressed = False
 
-# All music is loaded here
+# Alle musik wird hier geladen
 lobby_music = pygame.mixer.Sound("Audio/lobby_music.mp3")
 main_music = pygame.mixer.Sound("Audio/main_music.mp3")
 win_music = pygame.mixer.Sound("Audio/Here comes the money - meme [ ezmp3.co ].mp3")
 loss_music = pygame.mixer.Sound("Audio/Sad Trombone - Sound Effect (HD).mp3")
 
-# In these 2 blocks of code we load most of our sprites and images.
+# In diesen 2 Codeblöcken fügen wir die meisten unserer Sprites und Bilder ein.
 
 home_Screen = pygame.image.load("Sprites/19-playing-cards-png.png").convert_alpha()
 home_Screen = pygame.transform.scale_by(home_Screen, 0.3)
@@ -50,17 +50,17 @@ losing_image = pygame.transform.scale_by(losing_image, 0.3)
 winning_image = pygame.image.load("Sprites/mikeyross.jpeg").convert()
 winning_image = pygame.transform.scale_by(winning_image, 0.3)
 
-
-
+# Das ist der Code für unsere Überschrift oben auf dem Fenster
 pygame.display.set_caption("BLACKJACK - Sam & Sid")
 
+# Hier definieren wir genauere Farben, die wir immerwieder benutzen möchten. Sie kommen hauptsächlich in den verschiedenen Game-States vor.
 Green = (0, 50, 0)
 White = (255, 255, 255)
 Red = (255, 0, 9)
 Blue = (0, 255, 170)
 Purple = (240, 0, 255)
 
-# Game states
+#Unsere Game States. Hier setzen wir auch unseren Status auf Menu
 MENU = 0
 BETTING = 1
 GAME = 2
@@ -74,13 +74,13 @@ small_font_cards = pygame.font.SysFont('Times New Roman', 40)
 final_font = pygame.font.SysFont('Comic Sans MS', 55)
 final_font_Trevor = pygame.font.SysFont('Comic Sans MS', 40)
 
-#Variable setting for betting state
+#Betting variables
 total_bet_amount = 0
 total_displayed = small_font_1.render("$" + str(total_bet_amount), True, (0, 255, 170))
 current_money = 500
 money_displayed_betting_screen = small_font.render("$" + str(current_money), True, (240, 0, 255))
 
-# GAME state variables
+# GAME variables
 cards = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
 # Because there are 4 of each card type in a deck, we must create 4x of each card type in the list for each deck
 single_deck = 4 * cards
